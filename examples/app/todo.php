@@ -52,12 +52,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST") {
  <div style="width: 50%; margin: 0 auto">
  <h2>TODO List</h2>
 
- <p>
  <form action="" method="post">
  <fieldset>
- <input type="submit" name="logout" value="Logout" class="pure-button"></p>
+ <input type="submit" name="logout" value="Logout" class="pure-button">
  </fieldset>
- </p>
+ </form>
 
  <form action="" method="post">
  <fieldset>
