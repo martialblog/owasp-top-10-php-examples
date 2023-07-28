@@ -111,7 +111,7 @@
 	    <h2>A2 - Examples</h2>
             <p>Session IDs in the URL and does not expire</p>
 	    <pre><code class="php" data-trim>
-                // http://xy.com/webshop;jsessionid=2P0OC2JSNDLPSKHCJUN2JV
+                // http://example.com/webshop;jsessionid=2P0OC2JSNDLPSKHCJUN2JV
 	    </code></pre>
           </section>
 	  <section>
@@ -194,12 +194,12 @@
 	    <pre><code class="php" data-trim>
                 pstmt.setString(1, request.getParameter("account"));
                 ResultSetresults = pstmt.executeQuery( );
-                // https://xy.com/app/accountInfo?acct=admin
+                // https://example.com/app/accountInfo?acct=admin
 	    </code></pre>
             <p>Unprotected URL are exposed</p>
 	    <pre><code class="php" data-trim>
-                // https://xy.com/app/webshop
-                // https://xy.com/app/admindashboard
+                // https://example.com/app/webshop
+                // https://example.com/app/admindashboard
 	    </code></pre>
 	  </section>
 	  <section>
@@ -329,8 +329,8 @@
             <p>CVE-2019-15107 - An attacker added a command injection in Webmin </p>
 	  </section>
 	  <section>
-	    <h2>A9 - Mitigation</h2>
-            <p>Remove unused dependencies, unnecessary features, components and files.</p>
+	    <h2>A9.1 - Mitigation</h2>
+            <p>Keep dependencies minimal and use version pinning (ideally with hashes).</p>
             <p>Only obtain components from official sources. Use package signing.</p>
             <p>Check changelogs or source code before updating.</p>
             <p>Continuously monitor sources like CVE for all dependencies.</p>
